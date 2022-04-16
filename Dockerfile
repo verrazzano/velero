@@ -11,7 +11,22 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-FROM --platform=$BUILDPLATFORM golang:1.17.8 as builder-env
+FROM --platform=$BUILDPLATFORM ghcr.io/oracle/oraclelinux:8-slim as builder-env
+
+ENV GOPATH=/root/go
+ENV PATH=$PATH:/usr/local/go/bin/
+ENV PATH=$PATH:${GOPATH}/bin/
+
+RUN mkdir -p ${GOPATH}/src && mkdir -p ${GOPATH}/bin && \
+    microdnf update -y && \
+    microdnf clean all && \
+    rm -rf /var/cache/yum/*
+
+RUN microdnf install git wget tar gzip bzip2
+
+RUN wget https://go.dev/dl/go1.17.5.linux-amd64.tar.gz \
+    && rm -rf /usr/local/go \
+    && tar -C /usr/local -xzf go1.17.5.linux-amd64.tar.gz
 
 ARG GOPROXY
 ARG PKG
@@ -28,8 +43,6 @@ ENV CGO_ENABLED=0 \
 WORKDIR /go/src/github.com/vmware-tanzu/velero
 
 COPY . /go/src/github.com/vmware-tanzu/velero
-
-RUN apt-get update && apt-get install -y bzip2
 
 FROM --platform=$BUILDPLATFORM builder-env as builder
 
@@ -50,12 +63,9 @@ RUN mkdir -p /output/usr/bin && \
     go build -o /output/${BIN} \
     -ldflags "${LDFLAGS}" ${PKG}/cmd/${BIN}
 
-# The digest for tag 'nonroot' at the time of the release
-FROM gcr.io/distroless/base-debian10@sha256:6dc8ca7c3bbdb1a00fd8f1229b1b8c88986a5818b830e3a42d4946982dbbf18b
-
-LABEL maintainer="Nolan Brubaker <brubakern@vmware.com>"
-
+FROM ghcr.io/oracle/oraclelinux:8-slim
 COPY --from=builder /output /
-
+RUN  microdnf update -y && \
+     microdnf clean all && \
+     rm -rf /var/cache/yum/*
 USER nonroot:nonroot
-
