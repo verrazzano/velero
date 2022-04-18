@@ -192,7 +192,6 @@ endif
 
 container:
 	@docker build  \
-	--platform $(BUILDX_PLATFORMS) \
 	$(addprefix -t , $(IMAGE_TAGS)) \
 	--build-arg=PKG=$(PKG) \
 	--build-arg=BIN=$(BIN) \
