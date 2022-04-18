@@ -40,9 +40,9 @@ COPY . /go/src/github.com/vmware-tanzu/velero
 
 FROM --platform=$BUILDPLATFORM builder-env as builder
 
-ARG TARGETOS
-ARG TARGETARCH
-ARG TARGETVARIANT
+ENV TARGETOS=linux
+ENV TARGETARCH=amd64
+ENV TARGETVARIANT=""
 ARG PKG
 ARG BIN
 ARG RESTIC_VERSION
