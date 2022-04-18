@@ -18,7 +18,7 @@
 BIN ?= velero
 
 # This repo's root import path (under GOPATH).
-PKG := github.com/vmware-tanzu/velero
+PKG := github.com/verrazzano/velero
 
 # Where to push the docker image.
 REGISTRY ?= velero
