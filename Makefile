@@ -18,7 +18,7 @@
 BIN ?= velero
 
 # This repo's root import path (under GOPATH).
-PKG := github.com/verrazzano/velero
+PKG := github.com/vmware-tanzu/velero
 
 # Where to push the docker image.
 REGISTRY ?= velero
@@ -191,11 +191,7 @@ endif
 	-f $(VELERO_DOCKERFILE) .
 
 container:
-ifneq ($(BUILDX_ENABLED), true)
-	$(error $(BUILDX_ERROR))
-endif
 	@docker buildx build --pull \
-	--output=type=$(BUILDX_OUTPUT_TYPE) \
 	--platform $(BUILDX_PLATFORMS) \
 	$(addprefix -t , $(IMAGE_TAGS)) \
 	--build-arg=PKG=$(PKG) \
