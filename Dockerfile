@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-FROM --platform=$BUILDPLATFORM ghcr.io/oracle/oraclelinux:7-slim as builder-env
+FROM ghcr.io/oracle/oraclelinux:7-slim as builder-env
 
 RUN yum update -y \
     && yum-config-manager --save --setopt=ol7_ociyum_config.skip_if_unavailable=true \
@@ -38,7 +38,7 @@ WORKDIR /go/src/github.com/vmware-tanzu/velero
 
 COPY . /go/src/github.com/vmware-tanzu/velero
 
-FROM --platform=$BUILDPLATFORM builder-env as builder
+FROM builder-env as builder
 
 ENV TARGETOS=linux
 ENV TARGETARCH=amd64
