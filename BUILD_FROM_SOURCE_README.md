@@ -1,6 +1,6 @@
 # Build Instructions
 
-The base tag this release is branched from is `v2.1.0`
+The base tag this release is branched from is `v1.8.1`
 
 Create Environment Variables
 
@@ -13,7 +13,7 @@ export DOCKER_TAG=v1.8.1-BFS
 Build and Push Images
 
 ```
-# Build and push Rancher Backup Operator
+# Build and push Velero
 git tag -d v1.8.1
 git tag  v1.8.1
 export DOCKER_CLI_EXPERIMENTAL=enabled
