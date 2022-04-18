@@ -191,7 +191,7 @@ endif
 	-f $(VELERO_DOCKERFILE) .
 
 container:
-	@docker buildx build --pull \
+	@docker build  \
 	--platform $(BUILDX_PLATFORMS) \
 	$(addprefix -t , $(IMAGE_TAGS)) \
 	--build-arg=PKG=$(PKG) \
