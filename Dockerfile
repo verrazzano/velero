@@ -62,4 +62,4 @@ COPY --from=builder /output /
 RUN  yum update -y  && \
      yum clean all && \
      rm -rf /var/cache/yum/*
-USER nonroot:nonroot
+USER 1000
