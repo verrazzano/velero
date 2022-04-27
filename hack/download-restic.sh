@@ -46,8 +46,11 @@ if [[ -z "${RESTIC_VERSION}" ]]; then
     exit 1
 fi
 
-curl -s -L https://github.com/restic/restic/releases/download/v${RESTIC_VERSION}/restic_${RESTIC_VERSION}_${GOOS}_${GOARCH}.bz2 -O
-bunzip2 restic_${RESTIC_VERSION}_${GOOS}_${GOARCH}.bz2
-mv restic_${RESTIC_VERSION}_${GOOS}_${GOARCH} ${restic_bin}
+#curl -s -L https://github.com/restic/restic/releases/download/v${RESTIC_VERSION}/restic_${RESTIC_VERSION}_${GOOS}_${GOARCH}.bz2 -O
+#bunzip2 restic_${RESTIC_VERSION}_${GOOS}_${GOARCH}.bz2
+#mv restic_${RESTIC_VERSION}_${GOOS}_${GOARCH} ${restic_bin}
+
+curl -s -L https://artifacthub-iad.oci.oraclecorp.com/olcne-yum-incubator-ol8/restic-0.13.0-1.el8.src.rpm -O
+rpm -i restic-0.13.0-1.el8.src.rpm
 
 chmod +x ${restic_bin}
