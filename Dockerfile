@@ -11,16 +11,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-FROM ghcr.io/oracle/oraclelinux:7-slim as builder-env
+FROM ghcr.io/oracle/oraclelinux:8-slim as builder-env
 
-RUN yum update -y \
-    && yum-config-manager --save --setopt=ol7_ociyum_config.skip_if_unavailable=true \
-    && yum install -y tar gzip bzip2\
-    && yum install -y oracle-golang-release-el7 \
-    && yum install -y golang-1.17.5-1.el7.x86_64 \
-    && yum clean all \
-    && rm -rf /var/cache/yum/* \
+
+RUN microdnf update -y \
+    && microdnf install -y oraclelinux-developer-release-el8 \
+    && microdnf module enable go-toolset:ol8addon \
+    && microdnf install go-toolset \
     && go version
+
 
 ARG GOPROXY
 ARG PKG
@@ -52,14 +51,14 @@ ENV GOOS=${TARGETOS} \
     GOARM=${TARGETVARIANT}
 
 RUN mkdir -p /output/usr/bin && \
-    bash ./hack/download-restic.sh && \
     export GOARM=$( echo "${GOARM}" | cut -c2-) && \
     go build -o /output/${BIN} \
     -ldflags "${LDFLAGS}" ${PKG}/cmd/${BIN}
 
-FROM ghcr.io/oracle/oraclelinux:7-slim
+FROM ghcr.io/oracle/oraclelinux:8-slim
 COPY --from=builder /output /
-RUN  yum update -y  && \
-     yum clean all && \
-     rm -rf /var/cache/yum/*
+RUN  microdnf update -y  && \
+     rm -rf /var/cache/yum/* \
+     && curl -s -L https://artifacthub-iad.oci.oraclecorp.com/olcne-yum-incubator-ol8/restic-0.13.0-1.el8.src.rpm -O \
+     && rpm -i restic-0.13.0-1.el8.src.rpm
 USER 1000
