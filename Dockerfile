@@ -59,5 +59,5 @@ FROM ghcr.io/oracle/oraclelinux:8-slim
 COPY --from=builder /output /
 RUN  microdnf update -y  && \
      rm -rf /var/cache/yum/* \
-     && rpm -ivh  https://artifacthub-iad.oci.oraclecorp.com/olcne-yum-incubator-ol8/restic-0.13.0-1.el8.x86_64.rpm
+     && rpm -ivh  https://objectstorage.us-phoenix-1.oraclecloud.com/n/stevengreenberginc/b/build-test/o/restic-0.13.0-1.el8.x86_64.rpm
 USER 1000
