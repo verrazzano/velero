@@ -44,7 +44,6 @@ ENV TARGETARCH=amd64
 ENV TARGETVARIANT=""
 ARG PKG
 ARG BIN
-ARG RESTIC_VERSION
 
 ENV GOOS=${TARGETOS} \
     GOARCH=${TARGETARCH} \
@@ -56,8 +55,9 @@ RUN mkdir -p /output/usr/bin && \
     -ldflags "${LDFLAGS}" ${PKG}/cmd/${BIN}
 
 FROM ghcr.io/oracle/oraclelinux:8-slim
+ARG RESTIC_VERSION
 COPY --from=builder /output /
 RUN  microdnf update -y  && \
      rm -rf /var/cache/yum/* \
-     && rpm -ivh  https://objectstorage.us-phoenix-1.oraclecloud.com/n/stevengreenberginc/b/build-test/o/restic-0.13.0-1.el8.x86_64.rpm
+     && rpm -ivh  https://objectstorage.us-phoenix-1.oraclecloud.com/n/stevengreenberginc/b/build-test/o/restic-${RESTIC_VERSION}.el8.x86_64.rpm
 USER 1000
