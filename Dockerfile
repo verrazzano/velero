@@ -59,5 +59,5 @@ ARG RESTIC_VERSION
 COPY --from=builder /output /
 RUN  microdnf update -y  && \
      rm -rf /var/cache/yum/* \
-     && rpm -ivh  https://objectstorage.us-phoenix-1.oraclecloud.com/n/stevengreenberginc/b/build-test/o/restic-${RESTIC_VERSION}.el8.x86_64.rpm
+     && rpm -ivh  https://artifacthub-iad.oci.oraclecorp.com/olcne-yum-stable-ol8/restic-${RESTIC_VERSION}.el8.x86_64.rpm
 USER 1000
