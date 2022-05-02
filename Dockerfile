@@ -55,9 +55,9 @@ RUN mkdir -p /output/usr/bin && \
     -ldflags "${LDFLAGS}" ${PKG}/cmd/${BIN}
 
 FROM ghcr.io/oracle/oraclelinux:8-slim
-ARG RESTIC_VERSION
+ARG RESTIC_RPM
 COPY --from=builder /output /
 RUN  microdnf update -y  && \
      rm -rf /var/cache/yum/* \
-     && rpm -ivh  https://artifacthub-iad.oci.oraclecorp.com/olcne-yum-stable-ol8/restic-${RESTIC_VERSION}.el8.x86_64.rpm
+     && rpm -ivh  ${RESTIC_RPM}
 USER 1000
