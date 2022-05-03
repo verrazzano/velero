@@ -11,8 +11,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+FROM ghcr.io/oracle/oraclelinux:8-slim as builder-env
 
-FROM golang:1.17.8
+
+RUN microdnf update -y \
+    && microdnf install -y oraclelinux-developer-release-el8 \
+    && microdnf module enable go-toolset:ol8addon \
+    && microdnf install go-toolset wget tar unzip git \
+    && go version
 
 ARG GOPROXY
 

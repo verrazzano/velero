@@ -11,7 +11,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-FROM --platform=$BUILDPLATFORM golang:1.17.8 as builder-env
+FROM ghcr.io/oracle/oraclelinux:8-slim as builder-env
+
+
+RUN microdnf update -y \
+    && microdnf install -y oraclelinux-developer-release-el8 \
+    && microdnf module enable go-toolset:ol8addon \
+    && microdnf install go-toolset \
+    && go version
+
 
 ARG GOPROXY
 ARG PKG
@@ -29,33 +37,27 @@ WORKDIR /go/src/github.com/vmware-tanzu/velero
 
 COPY . /go/src/github.com/vmware-tanzu/velero
 
-RUN apt-get update && apt-get install -y bzip2
+FROM builder-env as builder
 
-FROM --platform=$BUILDPLATFORM builder-env as builder
-
-ARG TARGETOS
-ARG TARGETARCH
-ARG TARGETVARIANT
+ENV TARGETOS=linux
+ENV TARGETARCH=amd64
+ENV TARGETVARIANT=""
 ARG PKG
 ARG BIN
-ARG RESTIC_VERSION
 
 ENV GOOS=${TARGETOS} \
     GOARCH=${TARGETARCH} \
     GOARM=${TARGETVARIANT}
 
 RUN mkdir -p /output/usr/bin && \
-    bash ./hack/download-restic.sh && \
     export GOARM=$( echo "${GOARM}" | cut -c2-) && \
     go build -o /output/${BIN} \
     -ldflags "${LDFLAGS}" ${PKG}/cmd/${BIN}
 
-# The digest for tag 'nonroot' at the time of the release
-FROM gcr.io/distroless/base-debian10@sha256:6dc8ca7c3bbdb1a00fd8f1229b1b8c88986a5818b830e3a42d4946982dbbf18b
-
-LABEL maintainer="Nolan Brubaker <brubakern@vmware.com>"
-
+FROM ghcr.io/oracle/oraclelinux:8-slim
+ARG RESTIC_RPM
 COPY --from=builder /output /
-
-USER nonroot:nonroot
-
+RUN  microdnf update -y  && \
+     rm -rf /var/cache/yum/* \
+     && rpm -ivh  ${RESTIC_RPM}
+USER 1000

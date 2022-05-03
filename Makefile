@@ -191,12 +191,7 @@ endif
 	-f $(VELERO_DOCKERFILE) .
 
 container:
-ifneq ($(BUILDX_ENABLED), true)
-	$(error $(BUILDX_ERROR))
-endif
-	@docker buildx build --pull \
-	--output=type=$(BUILDX_OUTPUT_TYPE) \
-	--platform $(BUILDX_PLATFORMS) \
+	@docker build  \
 	$(addprefix -t , $(IMAGE_TAGS)) \
 	--build-arg=PKG=$(PKG) \
 	--build-arg=BIN=$(BIN) \
@@ -204,7 +199,7 @@ endif
 	--build-arg=GIT_SHA=$(GIT_SHA) \
 	--build-arg=GIT_TREE_STATE=$(GIT_TREE_STATE) \
 	--build-arg=REGISTRY=$(REGISTRY) \
-	--build-arg=RESTIC_VERSION=$(RESTIC_VERSION) \
+	--build-arg=RESTIC_RPM=$(RESTIC_RPM) \
 	-f $(VELERO_DOCKERFILE) .
 	@echo "container: $(IMAGE):$(VERSION)"
 
